@@ -1,0 +1,29 @@
+version: '3'
+
+networks:
+  docker:
+    driver: bridge
+
+volumes:
+  postgres_data:
+
+services:
+  postgres2:
+    image: postgres
+    restart: always
+    entrypoint: ['docker-entrypoint.sh', 'postgres', '-c', 'fsync=off']
+    networks:
+      - docker
+    ports:
+      - '5432:5432'
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-U', 'postgres']
+      interval: 10s
+      timeout: 5s
+      retries: 5
