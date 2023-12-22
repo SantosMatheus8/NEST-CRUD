@@ -1,7 +1,9 @@
+import { Order } from '../../../domain/order/models/order.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -19,6 +21,9 @@ export class Product {
 
   @Column()
   quantity: number;
+
+  @ManyToMany(() => Order, (order) => order.products)
+  orders: Order[];
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;
