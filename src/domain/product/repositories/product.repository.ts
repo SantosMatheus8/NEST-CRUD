@@ -23,6 +23,15 @@ export class ProductRepository implements IProductRepository {
     return await this.typeormRepository.findOne({ where: { id } });
   }
 
+  public async findProductsByIds(ids: number[]): Promise<Product[]> {
+    const products = Promise.all(
+      ids.map(async (id) => {
+        return await this.typeormRepository.findOne({ where: { id } });
+      }),
+    );
+    return products;
+  }
+
   public async delete(id: number): Promise<void> {
     await this.typeormRepository.delete(id);
   }
