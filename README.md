@@ -22,6 +22,12 @@ Rodar migrations
 npm run migration:run
 ```
 
+Criar migrations
+
+```bash
+npm run typeorm migration:create -- src/database/migrations/migration-name
+```
+
 Rodar o projeto
 
 ```bash

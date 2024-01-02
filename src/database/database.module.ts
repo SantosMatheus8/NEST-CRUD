@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Produto1699890607710 } from './migrations/1699890607710-produto';
 import { DataSource } from 'typeorm';
-import { CreateOrderTable1703252196122 } from './migrations/1703252196122-create-order-table';
-import { CreateOrdersProductsTable1703252214770 } from './migrations/1703252214770-create-orders-products-table';
+import { CreateUserTable1704228361655 } from './migrations/1704228361655-create-user-table';
+import { CreateOrderTable1704228637764 } from './migrations/1704228637764-create-order-table';
+import { CreateOrdersProductsTable1704228653774 } from './migrations/1704228653774-create-orders-products-table';
 
 @Module({
   imports: [
@@ -20,8 +21,9 @@ import { CreateOrdersProductsTable1703252214770 } from './migrations/17032522147
           synchronize: false,
           migrations: [
             Produto1699890607710,
-            CreateOrderTable1703252196122,
-            CreateOrdersProductsTable1703252214770,
+            CreateUserTable1704228361655,
+            CreateOrderTable1704228637764,
+            CreateOrdersProductsTable1704228653774,
           ],
         };
       },
@@ -41,7 +43,8 @@ export default new DataSource({
   synchronize: false,
   migrations: [
     Produto1699890607710,
-    CreateOrderTable1703252196122,
-    CreateOrdersProductsTable1703252214770,
+    CreateUserTable1704228361655,
+    CreateOrderTable1704228637764,
+    CreateOrdersProductsTable1704228653774,
   ],
 });
