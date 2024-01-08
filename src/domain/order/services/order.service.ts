@@ -9,7 +9,9 @@ import { Order } from '../models/order.entity';
 import { IOrderRepository } from '../ports/orderRepository.interface';
 import { Providers } from '../../../domain/enums/providers.enum';
 import { IProductRepository } from '../../../domain/product/ports/productRepository.interface';
-import { Product } from 'src/domain/product/models/product.entity';
+import { Product } from '../../../domain/product/models/product.entity';
+import { IUserRepository } from '../../../domain/user/ports/userRepository.interface';
+import { IAddressRepository } from '../../../domain/address/ports/addressRepository.interface';
 
 @Injectable()
 export class OrderService {
@@ -18,6 +20,10 @@ export class OrderService {
     private readonly orderRepository: IOrderRepository,
     @Inject(Providers.productRepository)
     private readonly productRepository: IProductRepository,
+    @Inject(Providers.userRepository)
+    private readonly userRepository: IUserRepository,
+    @Inject(Providers.addressRepository)
+    private readonly addressRepository: IAddressRepository,
   ) {}
 
   public async create(order: CreateOrderDTO): Promise<Order> {
@@ -37,7 +43,11 @@ export class OrderService {
     newOrder.products = products;
     newOrder.price = order.price;
     newOrder.cep = order.cep;
+    const user = await this.userRepository.findById(order.userId);
+    const address = await this.addressRepository.findById(order.addressId);
 
+    newOrder.user = user;
+    newOrder.address = address;
     return await this.orderRepository.save(newOrder);
   }
 

@@ -8,5 +8,11 @@ export class CreateOrderDTO {
   price: number;
 
   @ApiProperty()
+  userId: number;
+
+  @ApiProperty()
+  addressId: number;
+
+  @ApiProperty()
   products: number[];
 }
