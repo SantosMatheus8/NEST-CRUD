@@ -1,10 +1,10 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
-  BadRequestException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateOrderDTO } from '../dto/order.dto';
+import { CreateOrderDTO, UpdateOrderDTO } from '../dto/order.dto';
 import { Order } from '../models/order.entity';
 import { IOrderRepository } from '../ports/orderRepository.interface';
 import { Providers } from '../../../domain/enums/providers.enum';
@@ -27,27 +27,43 @@ export class OrderService {
   ) {}
 
   public async create(order: CreateOrderDTO): Promise<Order> {
-    if (order.price <= 0) {
-      throw new BadRequestException(
-        'O preço do pedido deve ser um valor positivo e maior do que zero',
-      );
-    }
-
     const products = await this.productRepository.findProductsByIds(
       order.products,
     );
 
     await this.existsProducts(order.products, products);
 
-    const newOrder = new Order();
-    newOrder.products = products;
-    newOrder.price = order.price;
-    newOrder.cep = order.cep;
     const user = await this.userRepository.findById(order.userId);
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
     const address = await this.addressRepository.findById(order.addressId);
 
+    if (!address) {
+      throw new NotFoundException('Endereço não encontrado');
+    }
+
+    const productsToSave = order.products.map((productId) => {
+      const product = products.find((p) => p.id === productId);
+
+      if (product) {
+        if (product.quantity < 1) {
+          throw new BadRequestException('Produto sem estoque suficiente');
+        }
+        product.quantity -= 1;
+        return product;
+      }
+    });
+
+    const price = products.reduce((total, product) => total + product.price, 0);
+    const newOrder = new Order();
+    newOrder.products = products;
+    newOrder.price = price;
     newOrder.user = user;
     newOrder.address = address;
+
+    await this.productRepository.saveAll(productsToSave);
     return await this.orderRepository.save(newOrder);
   }
 
@@ -59,20 +75,14 @@ export class OrderService {
     const order = await this.orderRepository.findById(id);
 
     if (!order) {
-      throw new NotFoundException('Produto não encontrado');
+      throw new NotFoundException('Pedido não encontrado');
     }
 
     return order;
   }
 
-  public async update(id: number, order: CreateOrderDTO): Promise<Order> {
+  public async update(id: number, order: UpdateOrderDTO): Promise<Order> {
     const orderExists = await this.findById(id);
-
-    if (order.price <= 0) {
-      throw new BadRequestException(
-        'O preço do pedido deve ser um valor positivo e maior do que zero',
-      );
-    }
 
     const products = await this.productRepository.findProductsByIds(
       order.products,
@@ -80,10 +90,23 @@ export class OrderService {
 
     await this.existsProducts(order.products, products);
 
-    orderExists.cep = order.cep;
-    orderExists.price = order.price;
-    orderExists.products = products;
+    const productsToSave = order.products.map((productId) => {
+      const product = products.find((p) => p.id === productId);
 
+      if (product) {
+        if (product.quantity < 1) {
+          throw new BadRequestException('Produto sem estoque suficiente');
+        }
+        product.quantity -= 1;
+        return product;
+      }
+    });
+
+    const price = products.reduce((total, product) => total + product.price, 0);
+    orderExists.products = products;
+    orderExists.price = price;
+
+    await this.productRepository.saveAll(productsToSave);
     return await this.orderRepository.save(orderExists);
   }
 

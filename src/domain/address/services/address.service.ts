@@ -32,6 +32,10 @@ export class AddressService {
 
     const user = await this.userRepository.findById(address.userId);
 
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
     newAddress.user = user;
 
     return await this.addressRepository.save(newAddress);
@@ -45,7 +49,7 @@ export class AddressService {
     const address = await this.addressRepository.findById(id);
 
     if (!address) {
-      throw new NotFoundException('Produto não encontrado');
+      throw new NotFoundException('Endereço não encontrado');
     }
 
     return address;

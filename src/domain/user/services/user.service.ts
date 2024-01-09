@@ -31,7 +31,7 @@ export class UserService {
     const user = await this.userRepository.findById(id);
 
     if (!user) {
-      throw new NotFoundException('Produto não encontrado');
+      throw new NotFoundException('Usuário não encontrado');
     }
 
     return user;

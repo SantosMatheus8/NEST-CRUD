@@ -16,11 +16,16 @@ export class OrderRepository implements IOrderRepository {
   }
 
   public async findAll(): Promise<Order[]> {
-    return await this.typeormRepository.find();
+    return await this.typeormRepository.find({
+      relations: ['products', 'address'],
+    });
   }
 
   public async findById(id: number): Promise<Order> {
-    return await this.typeormRepository.findOne({ where: { id } });
+    return await this.typeormRepository.findOne({
+      where: { id },
+      relations: ['products', 'address'],
+    });
   }
 
   public async delete(id: number): Promise<void> {

@@ -15,6 +15,12 @@ export class ProductRepository implements IProductRepository {
     return await this.typeormRepository.save(product);
   }
 
+  public async saveAll(products: Product[]): Promise<void> {
+    this.typeormRepository.manager.transaction(async (em) => {
+      em.save(products);
+    });
+  }
+
   public async findAll(): Promise<Product[]> {
     return await this.typeormRepository.find();
   }

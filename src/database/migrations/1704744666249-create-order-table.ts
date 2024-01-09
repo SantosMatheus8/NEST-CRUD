@@ -14,10 +14,6 @@ export class CreateOrderTable1704744666249 implements MigrationInterface {
             isPrimary: true,
           },
           {
-            name: 'cep',
-            type: 'varchar',
-          },
-          {
             name: 'price',
             type: 'int',
           },

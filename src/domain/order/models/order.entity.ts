@@ -22,9 +22,6 @@ export class Order {
   @Column()
   price: number;
 
-  @Column()
-  cep: string;
-
   @ManyToMany(() => Product, (feature) => feature.orders)
   @JoinTable({
     name: 'orders_products',
